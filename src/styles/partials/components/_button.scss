@@ -1,0 +1,93 @@
+.status {
+    color: var(--bg-color-3);
+    font-size: 10px;
+    padding: 5px 11px;
+    border-radius: 15px;
+    font-weight: 700;
+}
+
+.status_success {
+    background-color: var(--success);
+}
+
+.status_danger {
+    background-color: var(--main-color);
+}
+
+.status_warning {
+    background-color: var(--warning);
+}
+
+.status_primary {
+    background-color: var(--primary);
+}
+
+.bt {
+    color: black;
+    padding: 6px 16px;
+    border-radius: 3px;
+    font-size: 14px;
+    font-weight: 500
+}
+
+.bt_success {
+    background-color: var(--success);
+}
+
+.bt_danger {
+    background-color: var(--main-color);
+}
+
+.bt_warning {
+    background-color: var(--warning);
+}
+
+.bt_primary {
+    background-color: var(--primary);
+}
+
+.bt_orange {
+    background-color: var(--orange);
+}
+
+// star
+/* From Uiverse.io by andrew-demchenk0 */
+
+/* From Uiverse.io by andrew-demchenk0 */ 
+.rating {
+  position: relative;
+  display: flex;
+  flex-direction: row-reverse;
+
+  input {
+    position: absolute;
+    appearance: none;
+    opacity: 0;
+  }
+
+  label {
+    cursor: pointer;
+    font-size: 30px;
+    color: #ddd;
+    display: inline-block;
+  }
+
+  label:before {
+    content: '★';
+  }
+
+  /* Khi một input được chọn, tất cả các label phía trước nó cũng được tô màu */
+  input:checked ~ label {
+    color: #ddd; /* Reset lại màu */
+  }
+
+  input:checked + label,
+  input:checked + label ~ label {
+    color: #ff9e0b;
+  }
+
+  label:hover,
+  label:hover ~ label {
+    color: #ff9e0b;
+  }
+}

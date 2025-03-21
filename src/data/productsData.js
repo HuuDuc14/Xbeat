@@ -2,13 +2,13 @@ const productsData = [
     {
         id: 1,
         tag: "hero-product",
-        tagline: "Keep the noise out, or in. You choose.",
+        tagline: "Giữ tiếng ồn bên ngoài, hoặc bên trong. Bạn chọn.",
         heroImage: "/images/products/jbl660nc-1.png",
         images: [
             "/images/products/jbl660nc-1.png",
             "/images/products/jbl660nc-2.png",
             "/images/products/jbl660nc-3.png",
-            "/images/products/jbl660nc-4.png",
+            "/images/products/jbl660nc-4.png", 
         ],
         brand: "JBL",
         title: "JBL Live 660NC",
@@ -20,7 +20,7 @@ const productsData = [
         originalPrice: 14999,
         quantity: 1,
         ratings: 1234,
-        rateCount: 5,
+        rateCount: 4,
         path: "/product-details/",
     },
     {
@@ -48,7 +48,7 @@ const productsData = [
     {
         id: 3,
         tag: "hero-product",
-        tagline: "Featherweight for comfort all-day.",
+        tagline: "Nhẹ như lông vũ, mang lại sự thoải mái suốt cả ngày.",
         heroImage: "/images/products/boat131-3.png",
         images: [
             "/images/products/boat131-1.png",
@@ -135,7 +135,7 @@ const productsData = [
     {
         id: 7,
         tag: "hero-product",
-        tagline: "Give your favourite music a boost.",
+        tagline: "Tăng cường âm nhạc yêu thích của bạn.",
         heroImage: "/images/products/sonyxb910n-1.png",
         images: [
             "/images/products/sonyxb910n-1.png",
@@ -201,7 +201,7 @@ const productsData = [
         path: "/product-details/",
     },
     {
-        id: 10,
+        id: 10, 
         images: [
             "/images/products/jbl100-1.png",
             "/images/products/jbl100-2.png",

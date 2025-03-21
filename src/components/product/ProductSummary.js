@@ -1,7 +1,8 @@
-import React from 'react';
-import reviewsData from '../../data/reviewsData';
+import React, { useContext, useEffect, useState } from 'react';
 import useActive from '../../hooks/useActive';
 import ProductReviews from './ProductReviews';
+import { ProductReviewContext } from '../../contexts/review/productReview';
+import { useParams } from 'react-router-dom';
 
 
 const ProductSummary = (props) => {
@@ -10,7 +11,23 @@ const ProductSummary = (props) => {
 
     const { active, handleActive, activeClass } = useActive('specs');
 
+    const { productReviews, fetchProductReview } = useContext(ProductReviewContext)
+    const [reviews, setReviews] = useState([]);
+    const { productId } = useParams();
 
+    useEffect(() => {
+        async function getProductReview() {
+            try {
+                const reviewData = await fetchProductReview(productId)
+                setReviews(reviewData);
+            } catch (error) {
+                console.error("Error fetching product details:", error);
+            }
+        }
+        getProductReview()
+    }, [productId]);
+
+    
     return (
         <>
             <section id="product_summary" className="section">
@@ -23,19 +40,19 @@ const ProductSummary = (props) => {
                                 className={`tabs_item ${activeClass('specs')}`}
                                 onClick={() => handleActive('specs')}
                             >
-                                Specifications
+                                Thông số kỹ thuật
                             </li>
                             <li
                                 className={`tabs_item ${activeClass('overview')}`}
                                 onClick={() => handleActive('overview')}
                             >
-                                Overview
+                                Tổng quan
                             </li>
                             <li
                                 className={`tabs_item ${activeClass('reviews')}`}
                                 onClick={() => handleActive('reviews')}
                             >
-                                Reviews
+                                Đánh giá
                             </li>
                         </ul>
                     </div>
@@ -47,23 +64,19 @@ const ProductSummary = (props) => {
                                 <div className="prod_specs">
                                     <ul>
                                         <li>
-                                            <span>Brand</span>
+                                            <span>Thương hiệu</span>
                                             <span>{brand}</span>
                                         </li>
                                         <li>
-                                            <span>Model</span>
+                                            <span>Mẫu mã</span>
                                             <span>{title}</span>
                                         </li>
                                         <li>
-                                            <span>Generic Name</span>
-                                            <span>{category}</span>
-                                        </li>
-                                        <li>
-                                            <span>Headphone Type</span>
+                                            <span>Loại tai nghe</span>
                                             <span>{type}</span>
                                         </li>
                                         <li>
-                                            <span>Connectivity</span>
+                                            <span>Kết nối</span>
                                             <span>{connectivity}</span>
                                         </li>
                                         <li>
@@ -74,19 +87,19 @@ const ProductSummary = (props) => {
                                 </div>
                             ) : active === 'overview' ? (
                                 <div className="prod_overview">
-                                    <h3>The <span>{title}</span> {info} provides with fabulous sound quality</h3>
+                                    <h3>Sản phẩm <span>{title}</span> {info} cung cấp chất lượng âm thanh tuyệt vời.</h3>
                                     <ul>
-                                        <li>Sound Tuned to Perfection</li>
-                                        <li>Comfortable to Wear</li>
-                                        <li>Long Hours Playback Time</li>
+                                        <li>Âm thanh được tinh chỉnh hoàn hảo.</li>
+                                        <li>Thoải mái khi đeo.</li>
+                                        <li>Thời gian phát nhạc lâu dài.</li>
                                     </ul>
-                                    <p>Buy the <b>{title} {info}</b> which offers you with fabulous music experience by providing you with awesome sound quality that you can never move on from. Enjoy perfect flexibility and mobility with amazing musical quality with these {category} giving you a truly awesome audio experience. It blends with exceptional sound quality and a range of smart features for an unrivalled listening experience.</p>
+                                    <p>Mua ngay <b>{title} {info}</b> mang đến cho bạn một trải nghiệm âm nhạc tuyệt vời với chất lượng âm thanh xuất sắc mà bạn sẽ không thể nào bỏ qua. Tận hưởng sự linh hoạt và di động hoàn hảo cùng chất lượng âm nhạc tuyệt vời, mang đến cho bạn một trải nghiệm âm thanh thực sự ấn tượng. Nó kết hợp chất lượng âm thanh vượt trội với nhiều tính năng thông minh, mang đến trải nghiệm nghe nhạc không đối thủ.</p>
                                 </div>
                             ) : (
                                 <div className="prod_reviews">
                                     <ul>
                                         {
-                                            reviewsData.map(item => (
+                                            reviews.map(item => (
                                                 <ProductReviews
                                                     key={item.id}
                                                     {...item}

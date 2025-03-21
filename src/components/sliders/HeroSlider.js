@@ -46,7 +46,7 @@ const HeroSlider = () => {
                                     {newPrice} &nbsp;
                                     <small><del>{oldPrice}</del></small>
                                 </h2>
-                                <Link to={`${path}${id}`} className="btn">Shop Now</Link>
+                                <Link to={`${path}${id}`} className="btn">Mua ngay</Link>
                             </div>
                             <figure className="hero_item_img">
                                 <img src={heroImage} alt="product-img" />

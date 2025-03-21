@@ -1,23 +1,17 @@
 export const sortMenu = [
     {
         id: 1,
-        title: "Latest",
+        title: "Mới nhất",
     },
-    {
-        id: 2,
-        title: "Featured",
-    },
-    {
-        id: 3,
-        title: "Top Rated",
-    },
+
+
     {
         id: 4,
-        title: "Price(Lowest First)",
+        title: "Giá (Từ thấp đến cao)",
     },
     {
         id: 5,
-        title: "Price(Highest First)"
+        title: "Giá (Từ cao đến thấp)"
     },
 ];
 

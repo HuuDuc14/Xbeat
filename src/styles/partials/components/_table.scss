@@ -1,0 +1,29 @@
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+
+    th{
+        border-bottom: 2px solid var(--main-color);
+        border-right: 1px solid var(--thumb-color);
+        border-left: 1px solid var(--thumb-color);
+        border-top: 1px solid var(--thumb-color);    
+        padding: 15px ;
+        min-width: 150px;
+    }
+
+    td {
+        padding: 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid var(--thumb-color);
+        border-right: 1px solid var(--thumb-color);
+        border-left: 1px solid var(--thumb-color);
+    }
+}

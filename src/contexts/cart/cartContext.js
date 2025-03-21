@@ -1,64 +1,60 @@
-import React, { createContext, useReducer } from 'react';
-import cartReducer from './cartReducer';
+import axios from "axios"
+import { createContext, useEffect, useState } from "react"
 
-// Cart-Context
-const cartContext = createContext();
 
-// Initial State
-const initialState = {
-    cartItems: []
-};
+export const CartContext = createContext({})
 
-// Cart-Provider Component
-const CartProvider = ({ children }) => {
+export const CartProvider = ({ children }) => {
+    const api_url = 'http://localhost:5000'
+    const [cart, setCart] = useState([])
 
-    const [state, dispatch] = useReducer(cartReducer, initialState);
+    const cartQuantity = cart.reduce((total, item) => total + item.quantity, 0);
 
-    // Dispatched Actions
-    const addItem = (item) => {
-        return dispatch({
-            type: 'ADD_TO_CART',
-            payload: { item }
-        });
+    const fetchCart = async (userId) => {
+        try {
+            const reponse = await axios.get(`${api_url}/cart/${userId}`)
+            setCart(reponse.data.items)
+            return reponse.data.items
+        } catch (error) {
+            console.error("There was an error fetching the cart!", error);
+        }
+    }
+    
+    
+
+    const addToCart = async (userId, productId) => {
+        try {
+            await axios.post(`${api_url}/cart`, {
+                userId,
+                items: [{ productId, quantity: 1 }]
+            })
+            // const updateCart = fetchCart(userId)
+            // setCart(updateCart)
+            fetchCart(userId);
+        } catch (error) {
+            console.error("There was an error add to cart!", error);
+        }
+    }
+
+    const decrementItem = async (userId, id) => {
+        try {
+            const response = await axios.post(`${api_url}/cart/decrement/${userId}/${id}`);
+            setCart(response.data.items);
+        } catch (error) {
+            console.error("Error decrementing item:", error);
+        }
+        fetchCart(userId);
     };
 
-    const removeItem = (itemId) => {
-        return dispatch({
-            type: 'REMOVE_FROM_CART',
-            payload: { itemId }
-        });
-    };
+    const clearCart = async (userId) => {
+        try {
+            await axios.post(`${api_url}/cart/deleteCart/${userId}`)
+        } catch (error) {
+            console.error("Lỗi khi xóa giỏ hàng", error);
+        }
+    }
 
-    const incrementItem = (itemId) => {
-        return dispatch({
-            type: 'INCREMENT_ITEM',
-            payload: { itemId }
-        });
-    };
-
-    const decrementItem = (itemId) => {
-        return dispatch({
-            type: 'DECREMENT_ITEM',
-            payload: { itemId }
-        });
-    };
-
-    // Context values
-    const values = {
-        ...state,
-        addItem,
-        removeItem,
-        incrementItem,
-        decrementItem
-    };
-
-    return (
-        <cartContext.Provider value={values}>
-            {children}
-        </cartContext.Provider>
-    );
-};
-
-
-export default cartContext;
-export { CartProvider };
+    return <CartContext.Provider value={{ cart, cartQuantity, fetchCart, addToCart, decrementItem, clearCart }}>
+        {children}
+    </CartContext.Provider>
+}

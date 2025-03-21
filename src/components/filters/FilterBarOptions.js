@@ -35,7 +35,7 @@ const FilterBarOptions = () => {
                             className="btn"
                             onClick={handleClearFilters}
                         >
-                            Clear Filters
+                            Xóa bộ lọc
                         </button>
                     </div>
                 )
@@ -44,7 +44,7 @@ const FilterBarOptions = () => {
             {/*===== Sort-menu =====*/}
             <div className={`sort_options ${isMobSortVisible ? 'show' : ''}`}>
                 <div className="sort_head">
-                    <h3 className="title">Sort By</h3>
+                    <h3 className="title">Sắp xếp theo</h3>
                     <button
                         type="button"
                         className="close_btn"
@@ -77,7 +77,7 @@ const FilterBarOptions = () => {
             {/*===== Filter-menu =====*/}
             <div className={`filter_options ${isMobFilterVisible ? 'show' : ''}`}>
                 <div className="filter_head">
-                    <h3 className="title">Filter By</h3>
+                    <h3 className="title">Lọc theo</h3>
                     <button
                         type="button"
                         className="close_btn"
@@ -91,7 +91,7 @@ const FilterBarOptions = () => {
 
                 {/* Filter by Brands */}
                 <div className="filter_block">
-                    <h4>Brands</h4>
+                    <h4>Thương hiệu</h4>
                     <ul className="filter_menu">
                         {
                             updatedBrandsMenu.map(item => {
@@ -115,7 +115,7 @@ const FilterBarOptions = () => {
 
                 {/* Filter by Category */}
                 <div className="filter_block">
-                    <h4>Category</h4>
+                    <h4>Danh mục</h4>
                     <ul className="filter_menu">
                         {
                             updatedCategoryMenu.map(item => {
@@ -139,7 +139,7 @@ const FilterBarOptions = () => {
 
                 {/* Filter by Price */}
                 <div className="filter_block">
-                    <h4>Price</h4>
+                    <h4>Giá</h4>
                     <div className="price_filter">
                         <p>{displayPrice}</p>
                         <input

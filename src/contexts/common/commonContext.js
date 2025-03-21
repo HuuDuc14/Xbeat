@@ -1,5 +1,6 @@
 import { createContext, useReducer } from 'react';
 import commonReducer from './commonReducer';
+import { type } from '@testing-library/user-event/dist/type';
 
 // Common-Context
 const commonContext = createContext();
@@ -7,9 +8,11 @@ const commonContext = createContext();
 // Initial State
 const initialState = {
     isFormOpen: false,
-    formUserInfo: '',
     isSearchOpen: false,
-    searchResults: []
+    searchResults: [],
+    isFormCreate: false,
+    isFormOrder: false,
+    isProductReview: false
 };
 
 // Common-Provider Component
@@ -25,10 +28,10 @@ const CommonProvider = ({ children }) => {
         });
     };
 
-    const setFormUserInfo = (info) => {
+    const toggleFormCreate = (toggle) => {
         return dispatch({
-            type: 'SET_FORM_USER_INFO',
-            payload: { info }
+            type: 'TOGGLE_FORM_CREATE',
+            payload: { toggle }
         });
     };
 
@@ -47,13 +50,29 @@ const CommonProvider = ({ children }) => {
         });
     };
 
+    const toggleFormOrder = (toggle) => {
+        return dispatch({
+            type: 'TOGGLE_ORDER',
+            payload: { toggle }
+        })
+    }
+
+    const toggleProductReview = (toggle) => {
+        return dispatch({
+            type: 'TOGGLE_PRODUCT_REVIEW',
+            payload: { toggle }
+        })
+    }
+
     // Context values
     const values = {
         ...state,
         toggleForm,
-        setFormUserInfo,
         toggleSearch,
-        setSearchResults
+        setSearchResults,
+        toggleFormCreate,
+        toggleFormOrder,
+        toggleProductReview
     };
 
     return (

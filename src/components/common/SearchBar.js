@@ -10,6 +10,7 @@ import useScrollDisable from '../../hooks/useScrollDisable';
 const SearchBar = () => {
 
     const { isSearchOpen, toggleSearch, searchResults, setSearchResults } = useContext(commonContext);
+    
 
     const searchRef = useRef();
 

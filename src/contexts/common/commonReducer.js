@@ -7,11 +7,10 @@ const commonReducer = (state, action) => {
                 isFormOpen: action.payload.toggle
             };
 
-
-        case 'SET_FORM_USER_INFO':
+        case 'TOGGLE_FORM_CREATE':
             return {
                 ...state,
-                formUserInfo: action.payload.info
+                isFormCreate: action.payload.toggle
             };
 
 
@@ -28,6 +27,17 @@ const commonReducer = (state, action) => {
                 searchResults: action.payload.results
             };
 
+        case 'TOGGLE_ORDER':
+            return {
+                ...state,
+                isFormOrder: action.payload.toggle
+            }
+
+        case 'TOGGLE_PRODUCT_REVIEW':
+            return {
+                ...state,
+                isProductReview: action.payload.toggle
+            }
 
         default:
             return state;

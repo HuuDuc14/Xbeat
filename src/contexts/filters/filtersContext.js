@@ -1,11 +1,10 @@
-import { createContext, useEffect, useReducer } from 'react';
-import productsData from '../../data/productsData';
+import { createContext, useEffect, useReducer, useContext } from 'react';
 import { brandsMenu, categoryMenu } from '../../data/filterBarData';
 import filtersReducer from './filtersReducer';
+import { ProductContext } from '../product/productContext';
 
 // Filters-Context
 const filtersContext = createContext();
-
 
 // Initial State
 const initialState = {
@@ -24,90 +23,76 @@ const initialState = {
     },
 };
 
-
 // Filters-Provider Component
 const FiltersProvider = ({ children }) => {
-
     const [state, dispatch] = useReducer(filtersReducer, initialState);
 
+    // Lấy products từ ProductContext
+    const { products } = useContext(ProductContext);
 
-    /* Loading All Products on the initial render */
     useEffect(() => {
+        if (products.length) {
+            const priceArr = products.map(item => item.finalPrice);
+            const minPrice = Math.min(...priceArr);
+            const maxPrice = Math.max(...priceArr);
 
-        // making a shallow copy of the original products data, because we should never mutate the orginal data.
-        const products = [...productsData];
-
-        // finding the Max and Min Price, & setting them into the state.
-        const priceArr = products.map(item => item.finalPrice);
-        const minPrice = Math.min(...priceArr);
-        const maxPrice = Math.max(...priceArr);
-
-        dispatch({
-            type: 'LOAD_ALL_PRODUCTS',
-            payload: { products, minPrice, maxPrice }
-        });
-
-    }, []);
-
+            dispatch({
+                type: 'LOAD_ALL_PRODUCTS',
+                payload: { products, minPrice, maxPrice }
+            });
+        }
+    }, [products]);
 
     /* function for applying Filters - (sorting & filtering) */
     const applyFilters = () => {
-
-        let updatedProducts = [...productsData];
+        let updatedProducts = [...products];
 
         /*==== Sorting ====*/
         if (state.sortedValue) {
             switch (state.sortedValue) {
-                case 'Latest':
-                    updatedProducts = updatedProducts.slice(0, 6).map(item => item);
-                    break;
-
-                case 'Featured':
-                    updatedProducts = updatedProducts.filter(item => item.tag === 'featured-product');
-                    break;
-
-                case 'Top Rated':
-                    updatedProducts = updatedProducts.filter(item => item.rateCount > 4);
-                    break;
-
-                case 'Price(Lowest First)':
+                case 'Mới nhất':
+                    updatedProducts = updatedProducts.slice(0, 6);
+                    break;              
+                case 'Giá (Từ thấp đến cao)':
                     updatedProducts = updatedProducts.sort((a, b) => a.finalPrice - b.finalPrice);
                     break;
-
-                case 'Price(Highest First)':
+                case 'Giá (Từ cao đến thấp)':
                     updatedProducts = updatedProducts.sort((a, b) => b.finalPrice - a.finalPrice);
                     break;
-
                 default:
-                    throw new Error('Wrong Option Selected');
+                    throw new Error('Lựa chọn sai');
             }
         }
 
         /*==== Filtering ====*/
 
         // filter by Brands
-        const checkedBrandItems = state.updatedBrandsMenu.filter(item => {
-            return item.checked;
-        }).map(item => item.label.toLowerCase());
+        const checkedBrandItems = state.updatedBrandsMenu
+            .filter(item => item.checked)
+            .map(item => item.label.toLowerCase());
 
         if (checkedBrandItems.length) {
-            updatedProducts = updatedProducts.filter(item => checkedBrandItems.includes(item.brand.toLowerCase()));
+            updatedProducts = updatedProducts.filter(item =>
+                checkedBrandItems.includes(item.brand.toLowerCase())
+            );
         }
 
         // filter by Category
-        const checkedCategoryItems = state.updatedCategoryMenu.filter(item => {
-            return item.checked;
-        }).map(item => item.label.toLowerCase());
+        const checkedCategoryItems = state.updatedCategoryMenu
+            .filter(item => item.checked)
+            .map(item => item.label.toLowerCase());
 
         if (checkedCategoryItems.length) {
-            updatedProducts = updatedProducts.filter(item => checkedCategoryItems.includes(item.category.toLowerCase()));
+            updatedProducts = updatedProducts.filter(item =>
+                checkedCategoryItems.includes(item.category.toLowerCase())
+            );
         }
 
         // filter by Price
         if (state.selectedPrice) {
-            updatedProducts = updatedProducts.filter(item => {
-                return item.finalPrice <= state.selectedPrice.price;
-            });
+            updatedProducts = updatedProducts.filter(item =>
+                item.finalPrice <= state.selectedPrice.price
+            );
         }
 
         dispatch({
@@ -118,28 +103,25 @@ const FiltersProvider = ({ children }) => {
 
     useEffect(() => {
         applyFilters();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [state.sortedValue, state.updatedBrandsMenu, state.updatedCategoryMenu, state.selectedPrice]);
-
-
+    }, [state.sortedValue, state.updatedBrandsMenu, state.updatedCategoryMenu, state.selectedPrice, products]);
 
     // Dispatched Actions
     const setSortedValue = (sortValue) => {
-        return dispatch({
+        dispatch({
             type: 'SET_SORTED_VALUE',
             payload: { sortValue }
         });
     };
 
     const handleBrandsMenu = (id) => {
-        return dispatch({
+        dispatch({
             type: 'CHECK_BRANDS_MENU',
             payload: { id }
         });
     };
 
     const handleCategoryMenu = (id) => {
-        return dispatch({
+        dispatch({
             type: 'CHECK_CATEGORY_MENU',
             payload: { id }
         });
@@ -147,33 +129,31 @@ const FiltersProvider = ({ children }) => {
 
     const handlePrice = (event) => {
         const value = event.target.value;
-
-        return dispatch({
+        dispatch({
             type: 'HANDLE_PRICE',
             payload: { value }
         });
     };
 
     const handleMobSortVisibility = (toggle) => {
-        return dispatch({
+        dispatch({
             type: 'MOB_SORT_VISIBILITY',
             payload: { toggle }
         });
     };
 
     const handleMobFilterVisibility = (toggle) => {
-        return dispatch({
+        dispatch({
             type: 'MOB_FILTER_VISIBILITY',
             payload: { toggle }
         });
     };
 
     const handleClearFilters = () => {
-        return dispatch({
+        dispatch({
             type: 'CLEAR_FILTERS'
         });
     };
-
 
     // Context values
     const values = {
@@ -186,7 +166,6 @@ const FiltersProvider = ({ children }) => {
         handleMobFilterVisibility,
         handleClearFilters,
     };
-
 
     return (
         <filtersContext.Provider value={values}>

@@ -1,42 +1,94 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { BsCartX } from 'react-icons/bs';
-import { calculateTotal, displayMoney } from '../helpers/utils';
+import { displayMoney } from '../helpers/utils';
 import useDocTitle from '../hooks/useDocTitle';
-import cartContext from '../contexts/cart/cartContext';
-import CartItem from '../components/cart/CartItem';
 import EmptyView from '../components/common/EmptyView';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { TbTrash } from 'react-icons/tb';
+import { FaMinus, FaPlus } from 'react-icons/fa';
+import { CartContext } from '../contexts/cart/cartContext';
+import { UserContext } from '../contexts/user/userContext';
+import commonContext from '../contexts/common/commonContext';
+import OrderForm from '../components/form/OrderForm';
 
 
 const Cart = () => {
 
     useDocTitle('Cart');
-
-    const { cartItems } = useContext(cartContext);
-
-    const cartQuantity = cartItems.length;
-
-    // total original price
-    const cartTotal = cartItems.map(item => {
-        return item.originalPrice * item.quantity;
-    });
-
-    const calculateCartTotal = calculateTotal(cartTotal);
-    const displayCartTotal = displayMoney(calculateCartTotal);
+    const api_url = "http://localhost:5000";
+    const { userId } = useContext(UserContext)
+    const { toggleFormOrder } = useContext(commonContext)
+    const { fetchCart } = useContext(CartContext)
+    const [cart, setCart] = useState([])
 
 
-    // total discount
-    const cartDiscount = cartItems.map(item => {
-        return (item.originalPrice - item.finalPrice) * item.quantity;
-    });
+    useEffect(() => {
+        if (userId) {
+            async function getCart() {
+                try {
+                    const cartData = await fetchCart(userId)
+                    setCart(cartData)
+                } catch (error) {
+                    console.error("Error fetching cart:", error);
+                }
+            }
+            getCart()
+        }
+    }, [userId])
+    
+    const cartQuantity = cart.length;
 
-    const calculateCartDiscount = calculateTotal(cartDiscount);
-    const displayCartDiscount = displayMoney(calculateCartDiscount);
+    function total() {
+        let total = 0
+        for (let i = 0; i < cart.length; i++) {
+            total += cart[i].quantity *
+                cart[i].productId.finalPrice
+        }          
+        return total
+    }
+
+    function decrementItem(id) {
+        
+        axios.post(`${api_url}/cart/decrement/${userId}/${id}`)
+            .then((response) => {
+                setCart(response.data.items)
+                fetchCart(userId)
+            })
+            .catch((error) => {
+                console.error("Error removing item from cart:", error);
+            });
+    }
+
+    function incrementItem(id) {
+        axios.post(`${api_url}/cart/increment/${userId}/${id}`)
+            .then((response) => {
+                setCart(response.data.items)
+                fetchCart(userId)
+            })
+    }
+
+    function removeItem(id) {
+        axios.delete(`${api_url}/cart/${userId}/${id}`)
+            .then((response) => {
+                setCart(response.data.items);
+                fetchCart(userId)
+            })
+            .catch((error) => {
+                console.error("Error removing item from cart:", error);
+            });
+    }
 
 
-    // final total amount
-    const totalAmount = calculateCartTotal - calculateCartDiscount;
-    const displayTotalAmount = displayMoney(totalAmount);
 
+
+
+
+    const order = () => {
+        toggleFormOrder(true)
+    }
+
+    
 
     return (
         <>
@@ -54,11 +106,54 @@ const Cart = () => {
                             <div className="wrapper cart_wrapper">
                                 <div className="cart_left_col">
                                     {
-                                        cartItems.map(item => (
-                                            <CartItem
-                                                key={item.id}
-                                                {...item}
-                                            />
+                                        cart.map(item => (
+                                            <div className="cart_item" key={item._id}>
+                                                <div className="cart_item_img">
+                                                    <Link to={`/product-details/${item.productId._id}`}>
+                                                        <img
+                                                            src={`${api_url}/images/${item.productId.images[0]}`}
+                                                            alt="product-img"
+                                                        />
+                                                    </Link>
+                                                </div>
+                                                <div className="cart_item_info">
+                                                    <div className="cart_item_head">
+                                                        <h4 className="cart_item_title">
+                                                            <Link to={`/product-details/${item.productId._id}`}>
+                                                                {item.productId.title || ''}
+                                                                {item.productId.info || ''}
+                                                            </Link>
+                                                        </h4>
+                                                        <div className="cart_item_del">
+                                                            <span onClick={() => removeItem(item._id)}>
+                                                                <TbTrash />
+                                                            </span>
+                                                            <div className="tooltip">Remove Item</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <h2 className="cart_item_price">
+                                                        {displayMoney(item.productId.finalPrice * item.quantity || '')} &nbsp;
+                                                    </h2>
+                                                    <div className="quantity_box">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => decrementItem(item._id)}
+                                                        >
+                                                            <FaMinus />
+                                                        </button>
+                                                        <span className="quantity_count">
+                                                            {item.quantity}
+                                                        </span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => incrementItem(item._id)}
+                                                        >
+                                                            <FaPlus />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         ))
                                     }
                                 </div>
@@ -66,29 +161,25 @@ const Cart = () => {
                                 <div className="cart_right_col">
                                     <div className="order_summary">
                                         <h3>
-                                            Order Summary &nbsp;
-                                            ( {cartQuantity} {cartQuantity > 1 ? 'items' : 'item'} )
+                                        Tóm tắt đơn hàng &nbsp;
+                                            ( {cartQuantity} sản phẩm )
                                         </h3>
                                         <div className="order_summary_details">
                                             <div className="price">
-                                                <span>Original Price</span>
-                                                <b>{displayCartTotal}</b>
-                                            </div>
-                                            <div className="discount">
-                                                <span>Discount</span>
-                                                <b>- {displayCartDiscount}</b>
+                                                <span>Giá gốc</span>
+                                                <b>{displayMoney(total())}</b>
                                             </div>
                                             <div className="delivery">
-                                                <span>Delivery</span>
-                                                <b>Free</b>
+                                                <span>Ship</span>
+                                                <b>Miễn phí</b>
                                             </div>
                                             <div className="separator"></div>
                                             <div className="total_price">
-                                                <b><small>Total Price</small></b>
-                                                <b>{displayTotalAmount}</b>
+                                                <b><small>Tổng tiền</small></b>
+                                                <b>{displayMoney(total())}</b>
                                             </div>
                                         </div>
-                                        <button type="button" className="btn checkout_btn">Checkout</button>
+                                        <button onClick={() => order()} className="btn checkout_btn">Đặt hàng</button>
                                     </div>
                                 </div>
                             </div>
@@ -96,6 +187,8 @@ const Cart = () => {
                     }
                 </div>
             </section>
+
+            <OrderForm cart={cart} userId={userId} setCart={setCart} total={total()}/>
         </>
     );
 };

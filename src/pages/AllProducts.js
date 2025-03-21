@@ -3,7 +3,6 @@ import { BsExclamationCircle } from 'react-icons/bs';
 import useDocTitle from '../hooks/useDocTitle';
 import FilterBar from '../components/filters/FilterBar';
 import ProductCard from '../components/product/ProductCard';
-import Services from '../components/common/Services';
 import filtersContext from '../contexts/filters/filtersContext';
 import EmptyView from '../components/common/EmptyView';
 
@@ -43,7 +42,6 @@ const AllProducts = () => {
                 </div>
             </section>
 
-            <Services />
         </>
     );
 };
